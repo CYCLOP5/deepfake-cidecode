@@ -17,6 +17,7 @@ dependencies:
   - async-timeout=5.0.1=pyhd8ed1ab_1
   - attr=2.5.1=h166bdaf_1
   - attrs=25.1.0=pyh71513ae_0
+  - audioread=3.0.1=py310hff52083_2
   - aws-c-auth=0.8.1=h205f482_0
   - aws-c-cal=0.8.1=h1a47875_3
   - aws-c-common=0.10.6=hb9d3cd8_0
@@ -120,6 +121,8 @@ dependencies:
   - kiwisolver=1.4.7=py310h3788b33_0
   - krb5=1.21.3=h659f571_0
   - lame=3.100=h166bdaf_1003
+  - lazy-loader=0.4=pyhd8ed1ab_2
+  - lazy_loader=0.4=pyhd8ed1ab_2
   - lcms2=2.17=h717163a_0
   - ld_impl_linux-64=2.43=h712a8e2_4
   - lerc=4.0.0=h27087fc_0
@@ -184,6 +187,7 @@ dependencies:
   - libjpeg-turbo=3.0.0=hd590300_1
   - liblapack=3.9.0=16_linux64_mkl
   - liblapacke=3.9.0=16_linux64_mkl
+  - libllvm14=14.0.6=hcd5def8_4
   - libllvm19=19.1.7=ha7bfdaf_1
   - liblzma=5.6.4=hb9d3cd8_0
   - libmagic=5.46=hadc24fc_0
@@ -218,6 +222,7 @@ dependencies:
   - libpq=17.4=h27ae623_0
   - libprotobuf=5.28.3=h6128344_1
   - libre2-11=2024.07.02=hbbce691_2
+  - librosa=0.10.2.post1=pyhd8ed1ab_1
   - librsvg=2.58.4=h49af25d_2
   - libsndfile=1.2.2=hc60ed4a_1
   - libsodium=1.0.20=h4ab18f5_0
@@ -247,6 +252,7 @@ dependencies:
   - libxslt=1.1.39=h76b75d6_0
   - libzlib=1.3.1=hb9d3cd8_2
   - llvm-openmp=15.0.7=h0cdce71_0
+  - llvmlite=0.43.0=py310h1a6248f_1
   - lz4-c=1.10.0=h5888daf_1
   - magic=8.3.486=h6f44527_0
   - markdown=3.6=pyhd8ed1ab_0
@@ -259,6 +265,7 @@ dependencies:
   - mpfr=4.2.1=h90cbb55_3
   - mpg123=1.32.9=hc50e24c_0
   - mpmath=1.3.0=pyhd8ed1ab_1
+  - msgpack-python=1.1.0=py310h3788b33_0
   - multidict=6.1.0=py310h89163eb_2
   - multiprocess=0.70.16=py310ha75aee5_1
   - munkres=1.1.4=pyh9f0ad1d_0
@@ -270,6 +277,7 @@ dependencies:
   - nettle=3.9.1=h7ab15ed_0
   - networkx=3.4=pyhd8ed1ab_0
   - nlohmann_json=3.11.3=he02047a_1
+  - numba=0.60.0=py310h5dc88bb_0
   - ocl-icd=2.3.2=hb9d3cd8_2
   - opencl-headers=2024.10.24=h5888daf_0
   - opencv=4.11.0=qt6_py310hcfe8da8_602
@@ -292,6 +300,7 @@ dependencies:
   - pixman=0.44.2=h29eaf8c_0
   - platformdirs=4.3.6=pyhd8ed1ab_1
   - plotly=6.0.0=pyhd8ed1ab_0
+  - pooch=1.8.2=pyhd8ed1ab_1
   - prometheus-cpp=1.3.0=ha5d0236_0
   - prompt-toolkit=3.0.50=pyha770c72_0
   - propcache=0.2.1=py310h89163eb_1
@@ -311,6 +320,7 @@ dependencies:
   - pyparsing=3.2.1=pyhd8ed1ab_0
   - pyside6=6.8.2=py310hfd10a26_1
   - pysocks=1.7.1=pyha55dd90_7
+  - pysoundfile=0.13.1=pyhd8ed1ab_0
   - python=3.10.16=he725a3c_1_cpython
   - python-dateutil=2.9.0.post0=pyhff2d567_1
   - python-magic=0.4.27=pyh9ac5cc3_5
@@ -343,6 +353,8 @@ dependencies:
   - setuptools=75.8.2=pyhff2d567_0
   - six=1.17.0=pyhd8ed1ab_0
   - snappy=1.2.1=h8bd8927_1
+  - soxr=0.1.3=h0b41bf4_3
+  - soxr-python=0.5.0.post1=py310hf71b8c6_1
   - stack_data=0.6.3=pyhd8ed1ab_1
   - statsmodels=0.14.4=py310hf462985_0
   - svt-av1=3.0.0=h5888daf_0
@@ -451,6 +463,7 @@ dependencies:
       - tensorflow-io-gcs-filesystem==0.37.1
       - termcolor==2.5.0
       - timm==0.6.13
+      - tinytag==2.1.0
       - transaction==5.0
       - translationstring==1.4
       - velruse==1.1.1
