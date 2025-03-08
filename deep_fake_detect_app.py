@@ -16,20 +16,26 @@ from data_utils.datasets import *
 warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
 
 def overlay_heatmap(image_path, cam):
-    """
-    Overlay Grad-CAM heatmap on the original image.
-    """
+  
     img = cv2.imread(image_path)
     img = cv2.resize(img, (224, 224))
-
     cam = cv2.resize(cam, (img.shape[1], img.shape[0]))
-
     heatmap = cv2.applyColorMap(np.uint8(255 * cam), cv2.COLORMAP_JET)
-
     output = cv2.addWeighted(img, 0.6, heatmap, 0.4, 0)
     heatmap_path = image_path.replace(".png", "_heatmap.png")
     cv2.imwrite(heatmap_path, output)
     print(f"Saved heatmap: {heatmap_path}")
+def image_to_video(image_path, output_video="output.mp4", duration=3, fps=30):
+    img = cv2.imread(image_path)
+    height, width, _ = img.shape
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    video_writer = cv2.VideoWriter(output_video, fourcc, fps, (width, height))
+    frame_count = duration * fps
+    for _ in range(frame_count):
+        video_writer.write(img)
+    video_writer.release()
+    return output_video
+
 
 def predict_deepfake(input_videofile, df_method, debug=True, verbose=False):
     num_workers = multiprocessing.cpu_count() - 2
@@ -132,7 +138,6 @@ def predict_deepfake(input_videofile, df_method, debug=True, verbose=False):
         real_frames_high_prob = probabilities[probabilities < prob_threshold_fake]
         number_real_frames = len(real_frames_high_prob)
         real_prob = 1 - round(sum(real_frames_high_prob) / number_real_frames, 4) if number_real_frames else 0
-
         pred = 1 if fake_prob > real_prob else 0
 
         if debug:
@@ -156,7 +161,7 @@ def individual_test():
     label = "REAL" if pred == 0 else "DEEP-FAKE"
     probability = real_prob if pred == 0 else fake_prob
     probability = round(probability * 100, 4)
-
+    
     print_line()
     if pred == 0:
         print_green(f'The video is {label}, probability={probability}%')
@@ -164,20 +169,79 @@ def individual_test():
         print_red(f'The video is {label}, probability={probability}%')
     print_line()
 
+import json
+import sys
+import io
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='DeepFake Detection App')
-    parser.add_argument('--input_videofile', action='store', help='Input video file')
-    parser.add_argument('--method', action='store', choices=['plain_frames', 'MRI'], help='Method type')
-
+    parser.add_argument('--input_videofile', action='store', help='Input video file or image')
     args = parser.parse_args()
 
-    if args.input_videofile is not None:
-        if args.method is None:
-            parser.print_help(sys.stderr)
-        else:
-            if os.path.isfile(args.input_videofile):
-                individual_test()
-            else:
-                print(f'Input file not found ({args.input_videofile})')
-    else:
-        parser.print_help(sys.stderr)
+    log_capture_string = io.StringIO()
+    sys.stdout = log_capture_string
+    sys.stderr = log_capture_string
+
+    log_messages = []
+
+    try:
+        if args.input_videofile is not None:
+            if not os.path.isfile(args.input_videofile):
+                error_msg = f'Input file not found ({args.input_videofile})'
+                print(error_msg)
+                log_messages.append(error_msg)
+                sys.exit(1)
+
+            file_ext = os.path.splitext(args.input_videofile)[1].lower()
+            if file_ext in ['.png', '.jpg', '.jpeg']:
+                converted_video = image_to_video(args.input_videofile, "converted_video.mp4")
+                print(f'Converted image {args.input_videofile} to video {converted_video}')
+                args.input_videofile = converted_video
+
+            print("\nRunning Plain Frames Model...")
+            fake_prob_plain, real_prob_plain, pred_plain = predict_deepfake(
+                args.input_videofile, 'plain_frames', debug=True, verbose=True
+            )
+
+            print("\nRunning MRI Model...")
+            fake_prob_mri, real_prob_mri, pred_mri = predict_deepfake(
+                args.input_videofile, 'MRI', debug=True, verbose=True
+            )
+
+            print("\n--- Results ---")
+            print(f"Plain Frames Model -> {'DEEP-FAKE' if pred_plain else 'REAL'} (Fake Prob: {fake_prob_plain * 100:.2f}%)")
+            print(f"MRI Model -> {'DEEP-FAKE' if pred_mri else 'REAL'} (Fake Prob: {fake_prob_mri * 100:.2f}%)")
+
+            vid = os.path.basename(args.input_videofile)[:-4]
+            plain_frames_location = os.path.join("output", vid, "plain_frames", vid)
+            mri_location = os.path.join("output", vid, "mri", vid)
+
+            output = {
+                "plain_frames": {
+                    "prediction": "DEEP-FAKE" if pred_plain else "REAL",
+                    "fake_probability": fake_prob_plain * 100,
+                    "real_probability": real_prob_plain * 100,
+                    "location": plain_frames_location
+                },
+                "mri": {
+                    "prediction": "DEEP-FAKE" if pred_mri else "REAL",
+                    "fake_probability": fake_prob_mri * 100,
+                    "real_probability": real_prob_mri * 100,
+                    "location": mri_location
+                },
+                "video": {
+                    "name": vid,
+                    "location": args.input_videofile
+                },
+                "log": log_capture_string.getvalue().split("\n") 
+            }
+
+            with open("detection_output.json", "w") as json_file:
+                json.dump(output, json_file, indent=4)
+
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+
+    finally:
+        sys.stdout = sys.__stdout__
+        sys.stderr = sys.__stderr__
