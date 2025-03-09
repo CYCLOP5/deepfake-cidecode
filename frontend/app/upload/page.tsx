@@ -6,6 +6,8 @@ import Link from "next/link";
 export default function VideoUpload() {
 	const [file, setFile] = useState<File | null>(null);
 	const [message, setMessage] = useState<string>("");
+	const [loading, setLoading] = useState<boolean>(false);
+	const [showResults, setShowResults] = useState<boolean>(false);
 
 	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		if (event.target.files) {
@@ -15,6 +17,10 @@ export default function VideoUpload() {
 
 	const handleUpload = async () => {
 		if (!file) return;
+
+		setLoading(true);
+		setMessage("");
+		setShowResults(false); // Hide results button on new upload
 
 		const formData = new FormData();
 		formData.append("file", file);
@@ -26,9 +32,16 @@ export default function VideoUpload() {
 			});
 
 			const data = await response.json();
-			setMessage(data.error || "File uploaded successfully!");
+			if (data.error) {
+				setMessage(data.error);
+			} else {
+				setMessage("File uploaded successfully!");
+				setShowResults(true); // Show results button after success
+			}
 		} catch (error) {
 			setMessage("Error uploading file.");
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -72,21 +85,34 @@ export default function VideoUpload() {
 						<div className="mt-6">
 							<button
 								type="submit"
-								className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-500 transition-colors duration-300"
-								disabled={!file}
+								className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-500 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+								disabled={!file || loading}
 							>
-								Submit
+								{loading ? "Uploading..." : "Submit"}
 							</button>
 						</div>
 					</form>
-					<div className="mt-6 text-center">
-						<Link
-							className="inline-block px-6 py-3 text-lg font-medium text-[#030712] bg-white rounded-lg hover:opacity-80 transition duration-300"
-							href="/report"
-						>
-							Show results!
-						</Link>
-					</div>
+					{loading && (
+						<div className="mt-4">
+							<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
+							<p className="text-gray-400 mt-2">
+								Processing file...
+							</p>
+						</div>
+					)}
+					{message && (
+						<p className="mt-4 text-gray-400">{message}</p>
+					)}
+					{showResults && (
+						<div className="mt-6 text-center">
+							<Link
+								className="inline-block px-6 py-3 text-lg font-medium text-[#030712] bg-white rounded-lg hover:opacity-80 transition duration-300"
+								href="http://localhost:5000/report"
+							>
+								Show results!
+							</Link>
+						</div>
+					)}
 				</div>
 			</div>
 		</section>
