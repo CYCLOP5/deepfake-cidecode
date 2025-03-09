@@ -19,11 +19,11 @@ This project implements a multi-modal DeepFake detection pipeline that processes
 
 ### 1.2. Face Detection and Extraction
 - **Face Detection:**  
-  - A pre-trained face detection module (e.g., MTCNN) is employed to detect and extract facial landmarks from each frame.
-  - This process crops facial regions to ensure subsequent processing focuses on relevant areas.
-
-- **Data Augmentation:**  
-  - During training, augmentation techniques (rotation, scaling, flipping, distractor overlays) are applied to simulate real-world variations and improve model robustness.
+  - A pre-trained face detection module, specifically the Multi-task Cascaded Convolutional Network (MTCNN), is employed to detect faces in each frame.  
+  - Following the approach detailed in the original MRI-GAN paper, frames are sampled (typically every 10th frame) to reduce computational cost. MTCNN is then applied to each selected frame to detect facial landmarks and crop the corresponding facial regions.
+  - In cases where MTCNN fails to detect any faces (which can occur due to low-quality, noisy, or highly distracted frames), those frames or entire videos are dropped from the dataset.  
+  - **Data Augmentation:**  
+    - Prior to face detection, various augmentation and distraction techniques (e.g., rotations, scaling, flipping, and overlaying distractor elements) are applied to simulate real-world conditions and improve model robustness.
 
 ---
 
@@ -102,12 +102,40 @@ The pipeline implements two parallel methods to detect manipulated faces:
 
 This technical overview details the architecture, loss functions, and hyperparameters (with τ set to 0.15) used in the MRI-GAN model, as well as the complete workflow of the multi-modal DeepFake detection pipeline.
 
+---
 
+## Dataset and Training Data Generation
+
+The MRI-GAN model is trained on a custom dataset called the **MRI-DF dataset**, which is comprised of image pairs: the original face image and its corresponding MRI image. For real faces, the MRI image is simply a blank (black) image, indicating no manipulation. For DeepFake faces, however, the MRI image captures the structural differences between the fake image and its corresponding real source image using a perceptual dissimilarity measure (SSIM).
+
+To construct the MRI-DF dataset, we followed the methodology described in the original paper (Pratikkumar Prajapati and Chris Pollett, *MRI-GAN: A Generalized Approach to Detect DeepFakes using Perceptual Image Assessment*, arXiv:2203.00108):
+
+- **Data Sources:**  
+  - **Fake Samples:**  
+    - Randomly selected 50% of the videos from the DeepFake Detection Challenge (DFDC) training set.  
+    - Included all videos from the Celeb-DF-v2 dataset.
+  - **Real Samples:**  
+    - Augmented the dataset with real face images from the FDF and FFHQ datasets to balance the representation, as the DFDC and Celeb-DF-v2 datasets contain a higher proportion of fake content.
+
+- **Mapping Fake to Real:**  
+  - The DFDC and Celeb-DF-v2 datasets provide metadata linking fake video clips to their corresponding real videos. This metadata is crucial for generating accurate MRI images by pairing each fake face with its real counterpart.
+
+- **MRI Generation Process:**  
+  - For each fake face, the MRI image is computed by applying an SSIM-based perceptual dissimilarity function between the fake frame and its corresponding real frame.
+  - For real faces, a blank (black) image is used as the MRI.
+  
+- **Data Augmentation:**  
+  - Various augmentation and distraction techniques (such as rotations, scaling, adding noise, and overlaying textual or geometric distractors) are applied to the DFDC training data prior to computing SSIM.  
+  - These augmentations help simulate real-world distortions and improve the robustness of the model.
+  - Note that augmentations are not applied to the Celeb-DF-v2, FDF, and FFHQ datasets, ensuring their MRI images remain unaltered.
+
+This comprehensive dataset allows the MRI-GAN to learn a mapping from a face image to its MRI representation—generating a blank output for real faces and an artifact-rich output for manipulated faces—which is pivotal for accurate DeepFake detection.
+---
 
 ## Credits
 
 This project builds upon the foundational concepts introduced in the MRI-GAN model for DeepFake detection by Pratikkumar Prajapati and Chris Pollett. While inspired by their work, we have made several adaptations and optimizations to enhance functionality and tailor the implementation to our specific use case.
-```
+
 @misc{2203.00108,
 Author = {Pratikkumar Prajapati and Chris Pollett},
 Title = {MRI-GAN: A Generalized Approach to Detect DeepFakes using Perceptual Image Assessment},
