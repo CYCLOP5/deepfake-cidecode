@@ -552,7 +552,7 @@ def generate_html_report(data, video_metadata, args):
     is_audio_only = (plain_frames_prob == 0 and mri_prob == 0)
     if is_audio_only:
         if audio_prediction.upper() == "FAKE":
-            verdict_emoji = "🚨"
+            verdict_emoji = "‼️"
             verdict_class = "fake"
             verdict_text = "AUDIO PREDICTION: DEEPFAKE DETECTED"
         elif audio_prediction.upper() == "REAL":
@@ -577,7 +577,7 @@ def generate_html_report(data, video_metadata, args):
             final_result = None 
         if final_result:
             if final_result == "DEEP-FAKE":
-                verdict_emoji = "🚨"
+                verdict_emoji = "‼️"
                 verdict_class = "fake"
                 verdict_text = "DEEPFAKE DETECTED"
             elif final_result == "REAL":
@@ -590,7 +590,7 @@ def generate_html_report(data, video_metadata, args):
                 verdict_text = "AUDIO ONLY FILE DETECTED, CHECK AUDIO ANALYSIS."
         else:
             if plain_frames_result == "DEEP-FAKE" and mri_result == "DEEP-FAKE":
-                verdict_emoji = "🚨"
+                verdict_emoji = "‼️"
                 verdict_class = "fake"
                 verdict_text = "DEEPFAKE DETECTED"
             elif plain_frames_result == "REAL" and mri_result == "REAL":
