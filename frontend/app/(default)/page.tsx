@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Home - Open PRO",
-  description: "Page description",
+	title: "DeepFake Detector",
+	description: "DeepFake Detection System",
 };
 
 import PageIllustration from "@/components/page-illustration";
@@ -9,11 +9,11 @@ import Features from "@/components/features";
 import Cta from "@/components/cta";
 
 export default function Home() {
-  return (
-    <>
-      <Hero />
-      <Features />
-      <Cta />
-    </>
-  );
+	return (
+		<>
+			<Hero />
+			<Features />
+			<Cta />
+		</>
+	);
 }
