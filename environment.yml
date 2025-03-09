@@ -419,10 +419,14 @@ dependencies:
       - apex==0.9.10.dev0
       - astunparse==1.6.3
       - beautifulsoup4==4.13.3
+      - blinker==1.9.0
+      - click==8.1.8
       - cryptacular==1.6.2
       - defusedxml==0.7.1
       - facenet-pytorch==2.6.0
       - ffmpeg-python==0.2.0
+      - flask==3.1.0
+      - flask-cors==5.0.1
       - flatbuffers==25.2.10
       - fsspec==2025.3.0
       - future==1.0.0
@@ -432,6 +436,7 @@ dependencies:
       - greenlet==3.1.1
       - h5py==3.13.0
       - hupper==1.12.1
+      - itsdangerous==2.2.0
       - keras==3.9.0
       - libclang==18.1.1
       - markdown-it-py==3.0.0

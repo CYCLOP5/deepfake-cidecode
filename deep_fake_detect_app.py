@@ -203,7 +203,7 @@ class Tee:
     def write(self, message):
         for stream in self.streams:
             stream.write(message)
-            stream.flush()  # Ensure output appears immediately
+            stream.flush()  
 
     def flush(self):
         for stream in self.streams:
@@ -219,10 +219,11 @@ def main():
     image_extensions = ['.png', '.jpg', '.jpeg']
 
     log_capture_string = io.StringIO()
-    sys.stdout = Tee(sys.__stdout__, log_capture_string)  # Print to terminal and capture logs
+    sys.stdout = Tee(sys.__stdout__, log_capture_string)
     sys.stderr = Tee(sys.__stderr__, log_capture_string)
 
     output = {}
+    vid = os.path.basename(args.input_file)[:-4]  
     try:
         if not os.path.isfile(args.input_file):
             error_msg = f'Input file not found ({args.input_file})'
@@ -233,7 +234,7 @@ def main():
             print("\nRunning Audio Model Only...")
             audio_result = predict_audio(args.input_file)
             output["audio"] = {"prediction": audio_result, "location": args.input_file}
-
+            
         elif file_ext in image_extensions:
             print("\nInput is an image. Converting to video...")
             converted_video = image_to_video(args.input_file, "converted_video.mp4")
@@ -255,16 +256,21 @@ def main():
             extract_audio(input_videofile, audio_output)
             audio_result = predict_audio(audio_output)
 
-            vid = os.path.basename(input_videofile)[:-4]
+            # vid is already defined at the start
+            plain_frames_location = os.path.join("output", vid, "plain_frames", vid)
+            mri_location = os.path.join("output", vid, "mri", vid)
+
             output["plain_frames"] = {
                 "prediction": "DEEP-FAKE" if pred_plain else "REAL",
                 "fake_probability": fake_prob_plain * 100,
                 "real_probability": real_prob_plain * 100,
+                "location": plain_frames_location
             }
             output["mri"] = {
                 "prediction": "DEEP-FAKE" if pred_mri else "REAL",
                 "fake_probability": fake_prob_mri * 100,
                 "real_probability": real_prob_mri * 100,
+                "location": mri_location
             }
             output["audio"] = {"prediction": audio_result}
 
@@ -283,28 +289,27 @@ def main():
             print("\nRunning Audio Model...")
             audio_output = "extracted_audio.wav"
             extract_audio(input_videofile, audio_output)
-            vid = os.path.basename(input_videofile)[:-4]
+            
+            # vid is already defined at the start
             plain_frames_location = os.path.join("output", vid, "plain_frames", vid)
             mri_location = os.path.join("output", vid, "mri", vid)
             audio_result = predict_audio(audio_output)
 
-            vid = os.path.basename(input_videofile)[:-4]
             output["plain_frames"] = {
                 "prediction": "DEEP-FAKE" if pred_plain else "REAL",
                 "fake_probability": fake_prob_plain * 100,
                 "real_probability": real_prob_plain * 100,
                 "location": plain_frames_location
-
             }
             output["mri"] = {
                 "prediction": "DEEP-FAKE" if pred_mri else "REAL",
                 "fake_probability": fake_prob_mri * 100,
                 "real_probability": real_prob_mri * 100,
                 "location": mri_location
-
             }
             output["audio"] = {"prediction": audio_result}
-        output["video"] = {"name": vid, "location": input_videofile}
+            
+        output["video"] = {"name": vid, "location": args.input_file}
         output["log"] = log_capture_string.getvalue().split("\n")
 
         with open("detection_output.json", "w") as json_file:
@@ -317,4 +322,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
