@@ -4,6 +4,11 @@ This project implements a multi-modal DeepFake detection pipeline that processes
 
 ---
 
+## **The Workflow of the Project is as shown below:**
+![Workflow](https://github.com/CYCLOP5/deepfake-cidecode/blob/ml-stuff/image.png)
+
+## **The Tech Stack of the Project is as shown below:**
+![Tech Stack](https://github.com/CYCLOP5/deepfake-cidecode/blob/ml-stuff/image(1).png)
 ## 1. Input Handling and Preprocessing
 
 ### 1.1. Media Input Types
@@ -161,6 +166,6 @@ This project builds upon the foundational concepts introduced in the MRI‑GAN m
 **Reference:**  
 - Pratikkumar Prajapati, Chris Pollett, *\"MRI‑GAN: A Generalized Approach to Detect DeepFakes using Perceptual Image Assessment\"*, 2022. [arXiv:2203.00108](https://arxiv.org/abs/2203.00108)
 
----
 
-Feel free to review and adjust any sections as needed!
+
+
