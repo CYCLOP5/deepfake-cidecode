@@ -1,37 +1,68 @@
-from flask import Flask, request, jsonify, send_file, redirect, logging
+from flask import Flask, request, jsonify,send_file
 from flask_cors import CORS
 import os
+import sqlite3
+import bcrypt
+import os
 import sys
-
 sys.path.append('/home/cyclops/Music/mri_gan_deepfake')
 import runmodel
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
-
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-users = {}
+DB_PATH = "users.db"
+
+def init_db():
+    with sqlite3.connect(DB_PATH) as conn:
+        c = conn.cursor()
+        c.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL
+        )
+        """)
+        conn.commit()
+
+init_db()
 
 @app.route("/register", methods=["POST"])
 def register():
     data = request.json
     email = data.get("email")
     password = data.get("password")
-    if email in users:
+
+    if not email or not password:
+        return jsonify({"error": "Email and password required"}), 400
+
+    hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode("utf-8")  # Store as string
+
+    try:
+        with sqlite3.connect(DB_PATH) as conn:
+            c = conn.cursor()
+            c.execute("INSERT INTO users (email, password) VALUES (?, ?)", (email, hashed_password))
+            conn.commit()
+        return jsonify({"message": "User registered successfully"}), 201
+    except sqlite3.IntegrityError:
         return jsonify({"error": "User already exists"}), 400
-    users[email] = password
-    return jsonify({"message": "User registered successfully"}), 201
 
 @app.route("/login", methods=["POST"])
 def login():
     data = request.json
     email = data.get("email")
     password = data.get("password")
-    if users.get(email) == password:
-        return jsonify({"message": "Login successful"}), 200
-    return jsonify({"error": "Invalid credentials"}), 401
+
+    with sqlite3.connect(DB_PATH) as conn:
+        c = conn.cursor()
+        c.execute("SELECT password FROM users WHERE email = ?", (email,))
+        user = c.fetchone()
+
+        if user and bcrypt.checkpw(password.encode(), user[0].encode()):  # Convert stored password back to bytes
+            return jsonify({"message": "Login successful", "redirect": "/upload"}), 200
+        return jsonify({"error": "Invalid credentials"}), 401
 
 @app.route("/upload", methods=["POST"])
 def upload_video():
@@ -56,10 +87,8 @@ def report():
         try:
             return send_file(report_path)
         except Exception as e:
-            logging.exception("Error sending report file")
             return jsonify({"error": "Error sending report"}), 500
     else:
-        logging.error("Report file not found")
         return jsonify({"error": "Report not found"}), 404
 
 

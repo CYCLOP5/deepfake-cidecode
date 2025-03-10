@@ -15,14 +15,7 @@ export default function Header() {
             <Logo />
           
           </li>
-          <li>
-              <Link
-                href="/upload"
-                className="btn-sm bg-blue-600 text-white py-[5px] px-4 rounded-lg hover:bg-blue-500 transition-colors duration-300"
-              >
-                Upload
-              </Link>
-            </li>
+         
           {/* Desktop sign in links */}
           <ul className="flex flex-1 items-center justify-end gap-3">
             <li>

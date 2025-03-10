@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function SignIn() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [message, setMessage] = useState<string>("");
+  const router = useRouter();
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -17,7 +19,12 @@ export default function SignIn() {
         credentials: "include",
       });
       const data = await response.json();
-      setMessage(data.error || "Signed in successfully!");
+
+      if (data.redirect) {
+        router.push(data.redirect);
+      } else {
+        setMessage(data.error || "Signed in successfully!");
+      }
     } catch (error) {
       setMessage("An error occurred.");
     }

@@ -51,13 +51,18 @@ export default function Features() {
                   d="m16.295 5.393 7.528 2.034-4.436 16.412L5.87 20.185l.522-1.93 11.585 3.132 3.392-12.55-5.597-1.514.522-1.93Z"
                 />
               </svg>
-              <h3 className="mb-1 font-nacelle text-[1rem] font-semibold text-gray-200">
-                Project Milestones
-              </h3>
-              <p className="text-indigo-200/65">
-                Track progress across custom flows for your team. Find the right
-                balance for the user, privacy and security.
-              </p>
+              <h3 className="mb-2 text-lg font-bold text-gray-100 tracking-wide">
+  <span className="text-indigo-400">◆</span> Models
+</h3>
+<div className="text-indigo-200/75 space-y-2">
+  <p>
+    <span className="font-semibold text-indigo-300">Frames-Based Detection</span> – Uses <span className="text-indigo-400">EfficientNet-B0</span>, fine-tuned for binary classification (Real vs. Fake). Detected faces are resized, normalized, and classified. <span className="italic">Grad-CAM</span> provides visual explanations.
+  </p>
+  <p>
+    <span className="font-semibold text-indigo-300">MRI-GAN Detection</span> – Generates MRI-like images using a <span className="text-indigo-400">U-Net-based GAN</span> with <span className="italic">PatchGAN</span> discriminator. Loss combines <span className="text-indigo-400">cGAN</span>, L2, and SSIM-based perceptual loss (<span className="italic">τ = 0.15</span>). The generated MRI images are classified using <span className="text-indigo-400">EfficientNet-B0</span>.
+  </p>
+</div>
+
             </article>
             <article>
               <svg
@@ -70,12 +75,14 @@ export default function Features() {
                 <path d="M19 6H0v2h17v8H7v-6H5v8h19v-2h-5V6Z" />
               </svg>
               <h3 className="mb-1 font-nacelle text-[1rem] font-semibold text-gray-200">
-                Team Views
-              </h3>
-              <p className="text-indigo-200/65">
-                Track progress across custom flows for your team. Find the right
-                balance for the user, privacy and security.
-              </p>
+  Face Detection & Data Augmentation
+</h3>
+<p className="text-indigo-200/65">
+  MTCNN detects faces in sampled frames (every 10th) to reduce computation. 
+  Undetected frames/videos are discarded. Preprocessing includes augmentations 
+  like rotation, scaling, flipping, and distractions to improve robustness.
+</p>
+
             </article>
             <article>
               <svg
@@ -91,12 +98,15 @@ export default function Features() {
                 />
               </svg>
               <h3 className="mb-1 font-nacelle text-[1rem] font-semibold text-gray-200">
-                Advanced Search
-              </h3>
-              <p className="text-indigo-200/65">
-                Track progress across custom flows for your team. Find the right
-                balance for the user, privacy and security.
-              </p>
+  Audio Detection Workflow
+</h3>
+<p className="text-indigo-200/65">
+  FoR dataset is used. Librosa loads audio, skipping silent parts. Volume is normalized, 
+  lengths are standardized, and mel-spectrograms are flattened for training.  
+  Models tested: RFC, Logistic Regression, XGBoost. Logistic Regression was chosen 
+  for best balance without overfitting.
+</p>
+
             </article>
           </div>
         </div>
