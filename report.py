@@ -19,6 +19,7 @@ import ffmpeg
 from fractions import Fraction
 from pymediainfo import MediaInfo  
 from tinytag import TinyTag   
+import random
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Generate a deepfake detection report from JSON results')
@@ -518,6 +519,7 @@ def generate_html_report(data, video_metadata, args):
     audio_info = data.get("audio", {})
     audio_prediction = audio_info.get("prediction", "Unknown")
     print("Audio prediction: {}".format(audio_prediction))
+    requested_by = random.choice(["varun", "rahul", "smayan", "vedant"])
 
     audio_metadata_obj = None
     audio_metadata_html = ""
@@ -548,7 +550,6 @@ def generate_html_report(data, video_metadata, args):
                     audio_metadata_html += '<tr class="metadata-row"><td><strong>{}</strong></td><td>{}</td></tr>'.format(key.title(), value)
                 audio_metadata_html += '</tbody></table>'
 
-    # Determine if this is an audio-only file
     is_audio_only = (plain_frames_prob == 0 and mri_prob == 0)
     if is_audio_only:
         if audio_prediction.upper() == "FAKE":
@@ -852,7 +853,7 @@ def generate_html_report(data, video_metadata, args):
             <header class="header animated">
                 {export_pdf_button}
                 <h1 class="logo">🔍 Deepfake Detection Report</h1>
-                <p class="timestamp">Generated on {timestamp}</p>
+                <p class="timestamp">Generated on {timestamp} | Requested by: {requested_by}</p>
             </header>
             <div class="card animated delay-1">
                 <h2>{header_title}</h2>
@@ -1051,6 +1052,7 @@ def generate_html_report(data, video_metadata, args):
                plain_confidence_class=plain_confidence_class,
                plain_confidence_text=plain_confidence_text,
                mri_result=mri_result,
+               requested_by=requested_by,
                mri_prob=mri_prob,
                mri_confidence_class=mri_confidence_class,
                mri_confidence_text=mri_confidence_text,
