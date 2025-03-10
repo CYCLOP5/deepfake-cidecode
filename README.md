@@ -2,6 +2,9 @@
 
 This project implements a multi-modal DeepFake detection pipeline that processes video, image, and audio inputs to determine if the media has been manipulated. The system uses advanced deep learning techniques for visual analysis and classical machine learning for audio analysis, integrating two parallel detection methods: a plain frames‑based method and an MRI‑GAN‑based method. Below is an in‑depth technical explanation of the pipeline's logic.
 
+
+[For model checkpoints](https://bit.ly/4hkm2YP)
+
 ---
 
 ## 1. Input Handling and Preprocessing
